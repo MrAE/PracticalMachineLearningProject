@@ -8,7 +8,7 @@ output:
 
 ```{r knitCode, eval=FALSE, echo=FALSE}
 require(knitr)
-knit2html("Proj.Rmd")
+rm(list=ls()); knit2html("Proj.Rmd")
 ```
 ## Objective 
 
@@ -22,6 +22,8 @@ model that will predict the type of exercise that each subject is performing.
 First are the libraries required to run this code.
 The training and testing data are loaded from the links given on the
 project webpage and stored in appropriately named objects.
+The first few columns denote subject name and various timestamps which
+are unnecessary for the prediction and will be removed.
 
 ```{r loadData}
 require(caret)
@@ -35,28 +37,32 @@ if(!file.exists("data")){
     download.file(testURL, destfile="./data/testing.csv", method="curl")
     }
 
-training0 <- read.csv("data/training.csv")[,-c(1:4)]
-testing0  <- read.csv("data/testing.csv")[,-c(1:4)]
+training0 <- read.csv("data/training.csv")[,-c(1:5)]
+testing0  <- read.csv("data/testing.csv")[,-c(1:5)]
 ```
 
-
-
-In surveying the data I have noticed there are sum entries with
+In surveying the data I have noticed there are some entries with
 `#DIV/0!` values.  I will convert these to `NA` in an attempt to clean 
 the data before modeling.  The columns that have these values have been
-read in as foctor variabels; this must be corrected as well.  The
-timestamp column will also be converted to a time variable.
+read in as factor variables; this must be corrected as well.  
+Some columns have more `NA` values than actual 
 
 ```{r cleanup}
 training1 <- replace(training0, 
                      which(training0 == "#DIV/0!", arr.ind=TRUE),
                      NA)
 
-tmp <- as.character(training1$cvtd_timestamp)
-training1$cvtd_timestamp <- strptime(tmp,format="%d/%m/%Y %H:%M")
-                                    
-i <- sapply(training1, is.factor); i[c("user_name","classe")] <- !i[c("user_name","classe")]
+i <- sapply(training1, is.factor); i[c("classe")] <- !i[c("classe")]
 training1[i] <- lapply(training1[i], as.numeric)
+
+l0 <- lapply(training1, function(x) all(!is.na(x)))
+
+nl0 <- names(l0[l0 == TRUE])
+
+#l1 <- lapply(training1, class)
+#l2 <- l1[l1 == "factor"]
+
+training1 <- training1[,nl0]
 ```
 
 The cleaned data set will be subset further into `train` and `test` sets
@@ -64,7 +70,7 @@ for model creation.
 
 Now the cleaned training data will be subset further
 
-```{r trainSelection}
+```{r trainSelection, eval=TRUE}
 set.seed(648)                          # seed for reproducibility
 inTrain <- createDataPartition(y=training1$classe,p=0.7,list=FALSE)
 train1 <- training1[inTrain,]
@@ -73,7 +79,7 @@ test1 <- training1[-inTrain,]
 
 
 
-```{r model}
+```{r model, eval=TRUE}
 modFit <- train(classe ~ ., method="rpart", data=train1)
 print(modFit$finalModel)
 ```
