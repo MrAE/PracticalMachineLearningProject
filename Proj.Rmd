@@ -6,6 +6,10 @@ output:
     keep_md: true
 ---
 
+```{r knitCode, eval=FALSE, echo=FALSE}
+require(knitr)
+knit2html("Proj.Rmd")
+```
 ## Objective 
 
 
@@ -32,7 +36,7 @@ if(!file.exists("data")){
     }
 
 training0 <- read.csv("data/training.csv")[,-c(1:4)]
-testing0  <- read.csv("data/testing.csv")[,-c(G]
+testing0  <- read.csv("data/testing.csv")[,-c(1:4)]
 ```
 
 
@@ -50,8 +54,8 @@ training1 <- replace(training0,
 
 tmp <- as.character(training1$cvtd_timestamp)
 training1$cvtd_timestamp <- strptime(tmp,format="%d/%m/%Y %H:%M")
-                                     
-i <- sapply(training1, is.factor); i[c(1,159)] <- !i[c(1,159)]
+                                    
+i <- sapply(training1, is.factor); i[c("user_name","classe")] <- !i[c("user_name","classe")]
 training1[i] <- lapply(training1[i], as.numeric)
 ```
 
