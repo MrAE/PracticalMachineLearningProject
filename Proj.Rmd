@@ -1,36 +1,110 @@
 ---
-title: "PML Project RMarkdown file."
+title: "Data Science Specialization: Practical Machine Learning"
 author: "Jesse Leigh Patsolic"
 output: 
   html_document:
     keep_md: true
 ---
 
+## Objective 
+
+
+The goal of this project is to use the data provided by 
+[groupware](http://groupware.les.inf.puc-rio.br/har) to create a 
+model that will predict the type of exercise that each subject is performing.
+
 ## Data Preparation 
 
+First are the libraries required to run this code.
 The training and testing data are loaded from the links given on the
 project webpage and stored in appropriately named objects.
 
 ```{r loadData}
+require(caret)
+require(ggplot2)
+
 if(!file.exists("data")){
-    dir.create("data")}
-trainURL <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
-testURL <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
-#download.file(trainURL, destfile="./data/training.csv", method="curl")
-#download.file(testURL, destfile="./data/testing.csv", method="curl")
-training <- read.csv("data/training.csv")
-testing <- read.csv("data/testing.csv")
-```
+    dir.create("data")
+    trainURL <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+    testURL <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+    download.file(trainURL, destfile="./data/training.csv", method="curl")
+    download.file(testURL, destfile="./data/testing.csv", method="curl")
+    }
 
-```{r explore}
-
-
-
+training0 <- read.csv("data/training.csv")[,-c(1:4)]
+testing0  <- read.csv("data/testing.csv")[,-c(G]
 ```
 
 
 
+In surveying the data I have noticed there are sum entries with
+`#DIV/0!` values.  I will convert these to `NA` in an attempt to clean 
+the data before modeling.  The columns that have these values have been
+read in as foctor variabels; this must be corrected as well.  The
+timestamp column will also be converted to a time variable.
+
+```{r cleanup}
+training1 <- replace(training0, 
+                     which(training0 == "#DIV/0!", arr.ind=TRUE),
+                     NA)
+
+tmp <- as.character(training1$cvtd_timestamp)
+training1$cvtd_timestamp <- strptime(tmp,format="%d/%m/%Y %H:%M")
+                                     
+i <- sapply(training1, is.factor); i[c(1,159)] <- !i[c(1,159)]
+training1[i] <- lapply(training1[i], as.numeric)
+```
+
+The cleaned data set will be subset further into `train` and `test` sets
+for model creation.
+
+Now the cleaned training data will be subset further
+
+```{r trainSelection}
+set.seed(648)                          # seed for reproducibility
+inTrain <- createDataPartition(y=training1$classe,p=0.7,list=FALSE)
+train1 <- training1[inTrain,]
+test1 <- training1[-inTrain,]
+```
+
+
+
+```{r model}
+modFit <- train(classe ~ ., method="rpart", data=train1)
+print(modFit$finalModel)
+```
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r print,, echo=FALSE, eval=FALSE}
+## Example code to generate submission files.
+answers = rep("A", 20)
+
+pml_write_files = function(x){
+  n = length(x)
+  for(i in 1:n){
+    filename = paste0("problem_id_",i,".txt")
+    write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+  }
+}
+
+
+pml_write_files(answers)
+```
