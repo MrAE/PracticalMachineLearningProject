@@ -1,0 +1,36 @@
+---
+title: "PML Project RMarkdown file."
+author: "Jesse Leigh Patsolic"
+output: 
+  html_document:
+    keep_md: true
+---
+
+## Data Preparation 
+
+The training and testing data are loaded from the links given on the
+project webpage and stored in appropriately named objects.
+
+```{r loadData}
+if(!file.exists("data")){
+    dir.create("data")}
+trainURL <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+testURL <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+#download.file(trainURL, destfile="./data/training.csv", method="curl")
+#download.file(testURL, destfile="./data/testing.csv", method="curl")
+training <- read.csv("data/training.csv")
+testing <- read.csv("data/testing.csv")
+```
+
+```{r explore}
+
+
+
+```
+
+
+
+
+
+
+
