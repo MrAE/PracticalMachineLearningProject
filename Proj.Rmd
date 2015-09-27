@@ -70,24 +70,22 @@ Now the cleaned training data will be subset further
 
 ```{r trainSelection, eval=TRUE}
 set.seed(648)                          # seed for reproducibility
-inTrain <- createDataPartition(y=training1$classe,p=0.7,list=FALSE)
+inTrain <- createDataPartition(y=training1$classe,p=0.6,list=FALSE)
 train1 <- training1[inTrain,]
 test1 <- training1[-inTrain,]
 ```
 
 
 
-```{r model, eval=FALSE}
-i <- 33; j <- i+3
-featurePlot(x = training1[,i:j], y=training1$classe, plot="pairs")
-modFitGLM   <- train(classe ~ ., method="glm", data=train1)
-modFitRpart <- train(classe ~ ., method="rpart", data=train1)
-modFitRF <- train(classe ~ ., method="rf", data=train1[sample(19000,1000),], prox=TRUE)
+```{r model, eval=TRUE}
+#modFitGLM   <- train(classe ~ ., method="glm", data=train1)
+#modFitRpart <- train(classe ~ ., method="rpart", data=train1)
+modFitRF <- train(classe ~ ., method="rf", data=train1, prox=TRUE)
 print(modFit$finalModel)
 ```
 
-```{r pred}
-modPred <- predict(modFit, newdata=test1)
+```{r pred, eval=FALSE}
+modPred <- predict(modFitRF, newdata=test1)
 table(test1$classe == modPred)
 ```
 
