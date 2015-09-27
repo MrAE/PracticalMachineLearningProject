@@ -12,20 +12,20 @@ require(knitr); rm(list=ls()); knit2html("Proj.Rmd")
 
 ## Objective 
 
-
 The goal of this project is to use the data provided by 
 [groupware](http://groupware.les.inf.puc-rio.br/har) to create a 
 model that will predict the type of exercise that each subject is performing.
 
 ## Data Preparation 
 
-First are the libraries required to run this code.
+First, the libraries required to run this code are loaded.
 The training and testing data are loaded from the links given on the
 project webpage and stored in appropriately named objects.
-The first few columns denote subject name and various timestamps which
-are unnecessary for the prediction and will be removed.
+The first few columns of the data denote subject name and 
+various timestamps which are unnecessary for the prediction and 
+are removed.
 
-```{r loadData}
+```{r loadData, eval=FALSE}
 require(caret)
 require(rattle)
 require(ggplot2)
@@ -45,10 +45,12 @@ testing0  <- read.csv("data/testing.csv")[,-c(1:5)]
 In surveying the data I have noticed there are some entries with
 `#DIV/0!` values.  I will convert these to `NA` in an attempt to clean 
 the data before modeling.  The columns that have these values have been
-read in as factor variables; this must be corrected as well.  
-Some columns have more `NA` values than actual 
+read in as factor variables; this is corrected as well.  
+Some columns have more `NA` values than actual data entries and are 
+removed from the training data.
 
-```{r cleanup}
+```{r cleanup, eval=FALSE}
+testing0$new_window <- as.numeric(testing0$new_win)
 training1 <- replace(training0, 
                      which(training0 == "#DIV/0!", arr.ind=TRUE),
                      NA)
@@ -57,42 +59,66 @@ i <- sapply(training1, is.factor); i[c("classe")] <- !i[c("classe")]
 training1[i] <- lapply(training1[i], as.numeric)
 
 l0 <- lapply(training1, function(x) all(!is.na(x)))
-
 nl0 <- names(l0[l0 == TRUE])
-
 training1 <- training1[,nl0]
 ```
+## Training Selection
+The cleaned data will be subset further into `train` and `test` sets
+for model creation.  
 
-The cleaned data set will be subset further into `train` and `test` sets
-for model creation.
-
-Now the cleaned training data will be subset further
-
-```{r trainSelection, eval=TRUE}
+```{r trainSelection, eval=FALSE}
 set.seed(648)                          # seed for reproducibility
-inTrain <- createDataPartition(y=training1$classe,p=0.6,list=FALSE)
+inTrain <- createDataPartition(y=training1$classe,p=0.05,list=FALSE)
 train1 <- training1[inTrain,]
 test1 <- training1[-inTrain,]
 ```
 
+## Fitting the model
+In trying different models types it seems that
+`randomForest` gave good results, so that is the method I will be using. 
+Training the model took a long time using a 70%/30% mix for training and
+testing sets respectively.  Even though I train with only 0.05% of the
+training data, my results appear to be good.
 
 
-```{r model, eval=TRUE}
-#modFitGLM   <- train(classe ~ ., method="glm", data=train1)
-#modFitRpart <- train(classe ~ ., method="rpart", data=train1)
+```{r model, eval=FALSE}
 modFitRF <- train(classe ~ ., method="rf", data=train1, prox=TRUE)
-print(modFit$finalModel)
 ```
 
-```{r pred, eval=FALSE}
+```{r oobEST, eval=TRUE}
+print(modFitRF$finalModel)
+```
+
+The OOB estimate is given as 5.8%, which seems very good.
+
+## Prediction 
+Now the prediction will be run on the test set and evaluated.
+
+```{r pred, eval=TRUE}
 modPred <- predict(modFitRF, newdata=test1)
 table(test1$classe == modPred)
 ```
+The error rate as seen in the table is approximately 6.1%.
 
+```{r confusionMatrix, eval=TRUE}
+confusionMatrix(test1$classe, modPred)
+```
 
+The accuracy is very good, given the comparatively small size of the
+training set.  
 
+## Validation
+I ran my model on the `testing0` data from above (which is the
+validation data).  I report the feedback I got from the submission
+script along with my predictions.
 
+```{r submissionANDresults, eval=TRUE}
+Predicted <- predict(modFitRF, newdata=testing0)
+truth <- rep(TRUE,20); truth[c(3,11)] <- FALSE
+data.frame(Predicted, truth)
+```
 
+### Happy Mathing ! ###
 
 
 
@@ -107,8 +133,7 @@ table(test1$classe == modPred)
 
 
 ```{r print,, echo=FALSE, eval=FALSE}
-## Example code to generate submission files.
-answers = rep("A", 20)
+## Example code to generate submission files from Prof. Jeff Leek
 
 pml_write_files = function(x){
   n = length(x)
@@ -118,6 +143,6 @@ pml_write_files = function(x){
   }
 }
 
-
-pml_write_files(answers)
+pml_write_files(Predicted)
+## predictions 3 and 11 were incorrect.  18/20
 ```
