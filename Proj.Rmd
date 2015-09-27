@@ -7,9 +7,9 @@ output:
 ---
 
 ```{r knitCode, eval=FALSE, echo=FALSE}
-require(knitr)
-rm(list=ls()); knit2html("Proj.Rmd")
+require(knitr); rm(list=ls()); knit2html("Proj.Rmd")
 ```
+
 ## Objective 
 
 
@@ -27,6 +27,7 @@ are unnecessary for the prediction and will be removed.
 
 ```{r loadData}
 require(caret)
+require(rattle)
 require(ggplot2)
 
 if(!file.exists("data")){
@@ -59,9 +60,6 @@ l0 <- lapply(training1, function(x) all(!is.na(x)))
 
 nl0 <- names(l0[l0 == TRUE])
 
-#l1 <- lapply(training1, class)
-#l2 <- l1[l1 == "factor"]
-
 training1 <- training1[,nl0]
 ```
 
@@ -79,12 +77,19 @@ test1 <- training1[-inTrain,]
 
 
 
-```{r model, eval=TRUE}
-modFit <- train(classe ~ ., method="rpart", data=train1)
+```{r model, eval=FALSE}
+i <- 33; j <- i+3
+featurePlot(x = training1[,i:j], y=training1$classe, plot="pairs")
+modFitGLM   <- train(classe ~ ., method="glm", data=train1)
+modFitRpart <- train(classe ~ ., method="rpart", data=train1)
+modFitRF <- train(classe ~ ., method="rf", data=train1[sample(19000,1000),], prox=TRUE)
 print(modFit$finalModel)
 ```
 
-
+```{r pred}
+modPred <- predict(modFit, newdata=test1)
+table(test1$classe == modPred)
+```
 
 
 
