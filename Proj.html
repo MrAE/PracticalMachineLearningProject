@@ -201,6 +201,14 @@ hr {
 </head>
 
 <body>
+<pre><code>## 
+## 
+## processing file: Proj.Rmd
+</code></pre>
+
+<pre><code>## Error in parse_block(g[-1], g[1], params.src): duplicate label &#39;knitCode&#39;
+</code></pre>
+
 <h2>Objective</h2>
 
 <p>The goal of this project is to use the data provided by 
@@ -217,8 +225,24 @@ various timestamps which are unnecessary for the prediction and
 are removed.</p>
 
 <pre><code class="r">require(caret)
-require(rattle)
-require(ggplot2)
+</code></pre>
+
+<pre><code>## Loading required package: caret
+## Loading required package: lattice
+## Loading required package: ggplot2
+</code></pre>
+
+<pre><code class="r">require(rattle)
+</code></pre>
+
+<pre><code>## Loading required package: rattle
+## Loading required package: RGtk2
+## Rattle: A free graphical interface for data mining with R.
+## Version 3.5.0 Copyright (c) 2006-2015 Togaware Pty Ltd.
+## Type &#39;rattle()&#39; to shake, rattle, and roll your data.
+</code></pre>
+
+<pre><code class="r">require(ggplot2)
 
 if(!file.exists(&quot;data&quot;)){
     dir.create(&quot;data&quot;)
@@ -274,6 +298,11 @@ training data, my results appear to be good.</p>
 <pre><code class="r">modFitRF &lt;- train(classe ~ ., method=&quot;rf&quot;, data=train1, prox=TRUE)
 </code></pre>
 
+<pre><code>## Loading required package: randomForest
+## randomForest 4.6-10
+## Type rfNews() to see new features/changes/bug fixes.
+</code></pre>
+
 <pre><code class="r">print(modFitRF$finalModel)
 </code></pre>
 
@@ -319,9 +348,9 @@ table(test1$classe == modPred)
 ##           Reference
 ## Prediction    A    B    C    D    E
 ##          A 5279    0    1   20    1
-##          B  239 3207  130   26    5
+##          B  240 3207  130   25    5
 ##          C    0  175 3038   31    6
-##          D    5   29  246 2754   21
+##          D    5   29  247 2754   20
 ##          E   42   36   28  102 3218
 ## 
 ## Overall Statistics
@@ -337,14 +366,14 @@ table(test1$classe == modPred)
 ## Statistics by Class:
 ## 
 ##                      Class: A Class: B Class: C Class: D Class: E
-## Sensitivity            0.9486   0.9304   0.8824   0.9390   0.9898
+## Sensitivity            0.9484   0.9304   0.8821   0.9393   0.9902
 ## Specificity            0.9983   0.9737   0.9860   0.9808   0.9865
 ## Pos Pred Value         0.9958   0.8891   0.9348   0.9015   0.9393
-## Neg Pred Value         0.9786   0.9840   0.9737   0.9885   0.9978
-## Prevalence             0.2986   0.1849   0.1847   0.1574   0.1744
+## Neg Pred Value         0.9785   0.9840   0.9736   0.9886   0.9979
+## Prevalence             0.2986   0.1849   0.1848   0.1573   0.1744
 ## Detection Rate         0.2832   0.1721   0.1630   0.1478   0.1726
 ## Detection Prevalence   0.2844   0.1935   0.1744   0.1639   0.1838
-## Balanced Accuracy      0.9735   0.9520   0.9342   0.9599   0.9882
+## Balanced Accuracy      0.9734   0.9520   0.9341   0.9601   0.9883
 </code></pre>
 
 <p>The accuracy is very good, given the comparatively small size of the
