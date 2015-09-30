@@ -6,7 +6,7 @@ output:
     keep_md: true
 ---
 
-```{r knitCode, eval=TRUE, echo=FALSE}
+```{r knitCode, eval=FALSE, echo=FALSE}
 require(knitr); rm(list=ls()); knit2html("Proj.Rmd")
 ```
 

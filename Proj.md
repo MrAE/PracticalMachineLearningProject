@@ -7,15 +7,6 @@ output:
 ---
 
 
-```
-## 
-## 
-## processing file: Proj.Rmd
-```
-
-```
-## Error in parse_block(g[-1], g[1], params.src): duplicate label 'knitCode'
-```
 
 ## Objective 
 
@@ -35,27 +26,7 @@ are removed.
 
 ```r
 require(caret)
-```
-
-```
-## Loading required package: caret
-## Loading required package: lattice
-## Loading required package: ggplot2
-```
-
-```r
 require(rattle)
-```
-
-```
-## Loading required package: rattle
-## Loading required package: RGtk2
-## Rattle: A free graphical interface for data mining with R.
-## Version 3.5.0 Copyright (c) 2006-2015 Togaware Pty Ltd.
-## Type 'rattle()' to shake, rattle, and roll your data.
-```
-
-```r
 require(ggplot2)
 
 if(!file.exists("data")){
@@ -114,12 +85,6 @@ training data, my results appear to be good.
 
 ```r
 modFitRF <- train(classe ~ ., method="rf", data=train1, prox=TRUE)
-```
-
-```
-## Loading required package: randomForest
-## randomForest 4.6-10
-## Type rfNews() to see new features/changes/bug fixes.
 ```
 
 

@@ -201,14 +201,6 @@ hr {
 </head>
 
 <body>
-<pre><code>## 
-## 
-## processing file: Proj.Rmd
-</code></pre>
-
-<pre><code>## Error in parse_block(g[-1], g[1], params.src): duplicate label &#39;knitCode&#39;
-</code></pre>
-
 <h2>Objective</h2>
 
 <p>The goal of this project is to use the data provided by 
@@ -225,24 +217,8 @@ various timestamps which are unnecessary for the prediction and
 are removed.</p>
 
 <pre><code class="r">require(caret)
-</code></pre>
-
-<pre><code>## Loading required package: caret
-## Loading required package: lattice
-## Loading required package: ggplot2
-</code></pre>
-
-<pre><code class="r">require(rattle)
-</code></pre>
-
-<pre><code>## Loading required package: rattle
-## Loading required package: RGtk2
-## Rattle: A free graphical interface for data mining with R.
-## Version 3.5.0 Copyright (c) 2006-2015 Togaware Pty Ltd.
-## Type &#39;rattle()&#39; to shake, rattle, and roll your data.
-</code></pre>
-
-<pre><code class="r">require(ggplot2)
+require(rattle)
+require(ggplot2)
 
 if(!file.exists(&quot;data&quot;)){
     dir.create(&quot;data&quot;)
@@ -296,11 +272,6 @@ testing sets respectively.  Even though I train with only 0.05% of the
 training data, my results appear to be good.</p>
 
 <pre><code class="r">modFitRF &lt;- train(classe ~ ., method=&quot;rf&quot;, data=train1, prox=TRUE)
-</code></pre>
-
-<pre><code>## Loading required package: randomForest
-## randomForest 4.6-10
-## Type rfNews() to see new features/changes/bug fixes.
 </code></pre>
 
 <pre><code class="r">print(modFitRF$finalModel)
